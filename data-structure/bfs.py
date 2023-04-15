@@ -3,15 +3,21 @@ import queue
 
 
 def main():
-    graph: list = [[2, 3], [1, 3, 4], [2, 4, 5], [2, 3, 5, 6], [3, 4], [4]]
+    # graph: list = [[2, 3], [1, 3, 4], [2, 4, 5], [2, 3, 5, 6], [3, 4], [4]]
+    graph: list = [[2, 6], [1, 3, 4], [2, 5], [
+        2, 5, 6], [3, 4, 8], [1, 4, 7], [6, 8], [5, 7]]
+
     idx: int = random.randint(0, len(graph) - 1)
     aim: int = random.randint(0, len(graph) - 1)
     print(f'First city: {idx + 1}')
 
     print(f'Last city: {aim + 1}')
     bfs_tree: list = bfs(graph, idx, aim)
-    path: list = [i + 1 for i in pathway(bfs_tree, aim)]
-    print(' -> '.join([str(f) for f in path[::-1]]))
+    path: list = pathway(bfs_tree, aim)
+    if len(path):
+        print(' -> '.join([str(city) for city in path]))
+    else:
+        print(f'There is no path from city {idx + 1} to {aim + 1}')
 
 
 def bfs(graph: list, idx: int, aim: int) -> list:
@@ -36,12 +42,24 @@ def bfs(graph: list, idx: int, aim: int) -> list:
 
 
 def pathway(father: list, aim: int) -> list:
-    path: list = [aim]
+    path: list = [aim + 1]
     idx: int = aim
-    while father[idx] != -1:
-        idx = father[idx]
-        path.append(idx)
+    try:
+        while father[idx] != -1:
+            idx = father[idx]
+            path.append(idx + 1)
+    except IndexError:
+        return []
+    path.reverse()
+    return path
 
+
+def pathway_recursive(father: list, aim: int, path: list = []) -> list:
+    if father[aim] == -1:
+        path.append(aim + 1)
+        return path
+    pathway_recursive(father, father[aim], path)
+    path.append(aim + 1)
     return path
 
 
