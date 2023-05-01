@@ -1,13 +1,14 @@
 import random
+import utils
+import time
 
 
 def main():
-    graph: list = [[2, 6], [1, 3, 4], [2, 5], [
-        2, 5, 6], [3, 4, 8], [1, 4, 7], [6, 8], [5, 7]]
-
+    graph: list = utils.generate_graph()
+    print(f'Nodes number: {len(graph)}')
+    initial_time: float = time.perf_counter()
     idx: int = random.randint(0, len(graph) - 1)
-    # aim: int = random.randint(0, len(graph) - 1)
-    aim: int = 10
+    aim: int = random.randint(0, len(graph) - 1)
     print(f'First city: {idx + 1}')
 
     print(f'Last city: {aim + 1}')
@@ -17,6 +18,8 @@ def main():
         print(' -> '.join([str(city) for city in path]))
     else:
         print(f'There is no path from city {idx + 1} to {aim + 1}')
+    end_time: float = time.perf_counter()
+    print(f'Time elapsed: {(end_time - initial_time):.2f} seconds')
 
 
 def dfs(graph: list, idx: int, aim: int, visited: list) -> list:
