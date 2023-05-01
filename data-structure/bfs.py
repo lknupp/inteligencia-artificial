@@ -1,16 +1,17 @@
 import random
 import queue
+import time
+from utils import generate_graph, print_adjacency_list
 
 
 def main():
-    # graph: list = [[2, 3], [1, 3, 4], [2, 4, 5], [2, 3, 5, 6], [3, 4], [4]]
-    graph: list = [[2, 6], [1, 3, 4], [2, 5], [
-        2, 5, 6], [3, 4, 8], [1, 4, 7], [6, 8], [5, 7]]
-
+    graph: list = generate_graph()
+    print(f'Nodes number: {len(graph)}')
+    initial_time: float = time.perf_counter()
     idx: int = random.randint(0, len(graph) - 1)
     aim: int = random.randint(0, len(graph) - 1)
-    print(f'First city: {idx + 1}')
 
+    print(f'First city: {idx + 1}')
     print(f'Last city: {aim + 1}')
     bfs_tree: list = bfs(graph, idx, aim)
     path: list = pathway(bfs_tree, aim)
@@ -18,16 +19,19 @@ def main():
         print(' -> '.join([str(city) for city in path]))
     else:
         print(f'There is no path from city {idx + 1} to {aim + 1}')
+    end_time: float = time.perf_counter()
+    print(f'Time elapsed: {(end_time - initial_time):.2f} seconds')
 
 
 def bfs(graph: list, idx: int, aim: int) -> list:
     visited: list = [False] * len(graph)
     father: list = [-1] * len(graph)
-
+    father[idx] = -2
     q: queue.Queue = queue.Queue()
     q.put(idx)
     while not q.empty():
         node = q.get()
+        visited[node] = True
         if aim == node:
             break
         for vertex in graph[node]:
@@ -36,27 +40,29 @@ def bfs(graph: list, idx: int, aim: int) -> list:
                 visited[vertex] = True
                 father[vertex] = node
                 q.put(vertex)
-        visited[node] = True
-
     return father
 
 
 def pathway(father: list, aim: int) -> list:
-    path: list = [aim + 1]
+    path: list = []
     idx: int = aim
-    try:
-        while father[idx] != -1:
-            idx = father[idx]
-            path.append(idx + 1)
-    except IndexError:
-        return []
-    path.reverse()
+    if father[idx] != -1:
+        path.append(idx + 1)
+        try:
+            while father[idx] != -2:
+                idx = father[idx]
+                path.append(idx + 1)
+        except IndexError:
+            return []
+        path.reverse()
     return path
 
 
 def pathway_recursive(father: list, aim: int, path: list = []) -> list:
-    if father[aim] == -1:
+    if father[aim] == -2:
         path.append(aim + 1)
+        return path
+    elif father[aim] == -1:
         return path
     pathway_recursive(father, father[aim], path)
     path.append(aim + 1)
