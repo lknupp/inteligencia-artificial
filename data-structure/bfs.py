@@ -1,7 +1,7 @@
 import random
 import queue
 import time
-from utils import generate_graph, print_adjacency_list
+from utils import generate_graph, print_adjacency_list, validate_path
 
 
 def main():
@@ -14,6 +14,7 @@ def main():
     print(f'First city: {idx + 1}')
     print(f'Last city: {aim + 1}')
     bfs_tree: list = bfs(graph, idx, aim)
+    validate_path(pathway(bfs_tree, aim), idx, aim)
     path: list = pathway(bfs_tree, aim)
     if len(path):
         print(' -> '.join([str(city) for city in path]))
