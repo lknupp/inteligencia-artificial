@@ -18,12 +18,11 @@ class Node:
     def __lt__(self, other: 'Node'):
         return self.estimated_cost < other.estimated_cost
 
+    def add_node(self, node: 'Node') -> None:
+        self.adjacency_list.append(node)
+
 
 @dataclass
 class Edge:
-    weight: int
     node: Node
-
-    def __init__(self, node: Node, weight: int):
-        self.node: Node = node
-        self.weight: int = weight
+    weight: int
