@@ -25,7 +25,7 @@ def print_adjacency_list(graph: list) -> None:
     return
 
 
-def generate_weighted_graph(nodes_number: int, max_nodes_connections: int) -> list:
+def generate_weighted_graph(nodes_number: int, max_nodes_connections: int) -> list[Node]:
     nodes_number, max_nodes_connections = validate_nodes_number(
         nodes_number, max_nodes_connections)
     graph_nodes: int = nodes_number
@@ -34,15 +34,13 @@ def generate_weighted_graph(nodes_number: int, max_nodes_connections: int) -> li
         Node(id, Status.NOT_VISITED, coordinates[id]) for id in range(graph_nodes)]
     node: Node
     for i, node in enumerate(weighted_graph):
-        tmp_padjacency_list: list[Edge] = list()
         for j in create_adjacency_list(i, graph_nodes, random.randint(1, max_nodes_connections)):
             adj_node: Node = weighted_graph[j]
             min_weight: int = floor(calculate_euclidian_distance(
                 node.coordinate, adj_node.coordinate))
-            weight: int = random.randint(min_weight, max(min_weight * 2, 100))
+            weight: int = random.randint(min_weight, 2 * min_weight)
             edge: Edge = Edge(adj_node, weight)
-            tmp_padjacency_list.append(edge)
-        node.adjacency_list = tmp_padjacency_list
+            node.adjacency_list.append(edge)
     return weighted_graph
 
 
@@ -98,11 +96,19 @@ def calculate_euclidian_distance(first_point: Coordinate, second_point: Coordina
     return distance
 
 
-def validate_path(path: list[int], source: int, destination: int) -> None:
+def validate_path(path: list[int], source: Node, destination: Node) -> None:
     if len(path):
         print(' -> '.join([str(city) for city in path]))
     else:
-        print(f'There is no path from city {source + 1} to {destination + 1}')
+        print(
+            f'There is no path from city {source.id + 1} to {destination.id + 1}')
+
+
+def initialize_graph(graph: list[Node]) -> None:
+    for node in graph:
+        node.status = Status.NOT_VISITED
+        node.estimated_cost = inf
+        node.father_node = None
 
 
 if __name__ == '__main__':
