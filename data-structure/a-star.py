@@ -1,4 +1,4 @@
-from utils import generate_weighted_graph, validate_path, initialize_graph, calculate_euclidian_distance
+from utils import generate_weighted_graph, validate_path, initialize_graph, calculate_euclidian_distance, pathway_recursive
 from node import Node
 import time
 import random
@@ -14,8 +14,8 @@ def main():
     source: Node = graph[random.randint(0, len(graph) - 1)]
     destination: Node = graph[random.randint(0, len(graph) - 1)]
 
-    print(f'First city: {source.id + 1}')
-    print(f'Last city: {destination.id + 1}')
+    print(f'First city: {source.name}')
+    print(f'Last city: {destination.name}')
     initial_time: float = time.perf_counter()
     a_star(graph, source, destination)
     validate_path(pathway_recursive(destination), source, destination)
@@ -43,17 +43,6 @@ def a_star(graph: list[Node], source: Node, destination: Node):
                     calculate_euclidian_distance(
                         node.coordinate, edge.node.coordinate)
                 p_queue.put((weight, edge.node))
-
-
-def pathway_recursive(node: Node, path: list = []) -> list[int]:
-    if node.father_node == node:
-        path.append(node.id + 1)
-        return path
-    elif node.father_node == None:
-        return path
-    pathway_recursive(node.father_node, path)
-    path.append(node.id + 1)
-    return path
 
 
 def relax(cur_node: Node, next_node: Node, weight: int) -> None:
