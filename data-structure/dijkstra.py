@@ -1,4 +1,4 @@
-from utils import generate_weighted_graph, validate_path, initialize_graph
+from utils import generate_weighted_graph, validate_path, initialize_graph, pathway_recursive
 from node import Node
 import time
 import random
@@ -10,12 +10,12 @@ from status import Status
 def main():
     graph_nodes: int = 5000
     graph: list[Node] = generate_weighted_graph(graph_nodes, 10)
-    print(f'Nodes number: {graph_nodes}')
+    print(f'Nodes number: {len(graph)}')
     source: Node = graph[random.randint(0, len(graph) - 1)]
     destination: Node = graph[random.randint(0, len(graph) - 1)]
 
-    print(f'First city: {source.id + 1}')
-    print(f'Last city: {destination.id + 1}')
+    print(f'First city: {source.name}')
+    print(f'Last city: {destination.name}')
     initial_time: float = time.perf_counter()
     dijkstra(graph, source, destination)
     validate_path(pathway_recursive(destination), source, destination)
@@ -28,7 +28,6 @@ def dijkstra(graph: list[Node], source: Node, destination: Node):
     p_queue: queue.PriorityQueue = queue.PriorityQueue()
     node: Node = source
     p_queue.put((0, node))
-    node.status = Status.PROCESSING
     node.estimated_cost = 0
     node.father_node = node
     while not p_queue.empty():
@@ -42,17 +41,6 @@ def dijkstra(graph: list[Node], source: Node, destination: Node):
             if edge.node.status != Status.VISITED:
                 edge.node.status = Status.PROCESSING
                 p_queue.put((edge.node.estimated_cost, edge.node))
-
-
-def pathway_recursive(node: Node, path: list = []) -> list:
-    if node.father_node == node:
-        path.append(node.id + 1)
-        return path
-    elif node.father_node == None:
-        return path
-    pathway_recursive(node.father_node, path)
-    path.append(node.id + 1)
-    return path
 
 
 def relax(cur_node: Node, next_node: Node, weight: int) -> None:
