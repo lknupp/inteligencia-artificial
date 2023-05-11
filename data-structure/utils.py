@@ -12,6 +12,9 @@ def generate_graph() -> list:
     """
     Generates a directed and non-simple graph with at least 100 nodes and a 
     maximum of 10000 nodes.
+
+    Returns:
+        list: The generated graph.
     """
     graph_nodes: int = random.randint(100, 10000)
     graph: list = [0] * graph_nodes
@@ -22,6 +25,12 @@ def generate_graph() -> list:
 
 
 def print_adjacency_list(graph: list) -> None:
+    """
+    Prints the adjacency list representation of a graph.
+
+    Args:
+        graph (list): The graph represented as an adjacency list.
+    """
     for adjacency_list in graph:
         print('[', f', '.join([str(node) for node in adjacency_list]), '],')
 
@@ -29,6 +38,16 @@ def print_adjacency_list(graph: list) -> None:
 
 
 def generate_weighted_graph(nodes_number: int, max_nodes_connections: int) -> list[Node]:
+    """
+    Generates a weighted graph with the specified number of nodes and maximum number of connections.
+
+    Args:
+        nodes_number: The number of nodes in the graph.
+        max_nodes_connections: The maximum number of connections each node can have.
+
+    Returns:
+        list: The generated weighted graph represented as a list of Node objects.
+    """
     nodes_number, max_nodes_connections = validate_nodes_number(
         nodes_number, max_nodes_connections)
     graph_nodes: int = nodes_number
@@ -49,6 +68,16 @@ def generate_weighted_graph(nodes_number: int, max_nodes_connections: int) -> li
 
 
 def validate_nodes_number(nodes_number: int, max_nodes_connections: int) -> tuple:
+    """
+    Validates the number of nodes and maximum number of connections for a graph.
+
+    Args:
+        nodes_number: The number of nodes.
+        max_nodes_connections: The maximum number of connections.
+
+    Returns:
+        tuple: A tuple containing the validated values for nodes_number and max_nodes_connections.
+    """
     default_nodes_value: int = 10
     if nodes_number <= 0:
         nodes_number = default_nodes_value
@@ -66,6 +95,17 @@ def validate_nodes_number(nodes_number: int, max_nodes_connections: int) -> tupl
 
 
 def create_adjacency_list(node_id: int, nodes_number: int, edges_number: int) -> list:
+    """
+    Creates an adjacency list for a node in a graph.
+
+    Args:
+        node_id: The ID of the node.
+        nodes_number: The total number of nodes in the graph.
+        edges_number: The number of edges to create.
+
+    Returns:
+        list: The adjacency list for the node.
+    """
     counts: list = [
         1 if i != node_id else 0 for i in range(0, nodes_number)]
 
@@ -76,6 +116,15 @@ def create_adjacency_list(node_id: int, nodes_number: int, edges_number: int) ->
 
 
 def generate_coordinate_list(quantity: int) -> list[Coordinate]:
+    """
+    Generates a list of coordinates.
+
+    Args:
+        quantity: The number of coordinates to generate.
+
+    Returns:
+        list: The list of generated coordinates.
+    """
     tmp_coordinates: set = set()
     while len(tmp_coordinates) != quantity:
         tmp_coordinates.add(generate_coordinate(min_coordinate=-1 *
@@ -88,7 +137,16 @@ def generate_coordinate_list(quantity: int) -> list[Coordinate]:
 
 
 def generate_coordinate(min_coordinate: int = -100, max_coordinate: int = 100):
+    """
+    Generates a random coordinate.
 
+    Args:
+        min_coordinate: The minimum value for the coordinate.
+        max_coordinate: The maximum value for the coordinate.
+
+    Returns:
+        tuple: The generated coordinate in the form (x_coordinate, y_coordinate).
+    """
     x_coordinate: int = random.randint(min_coordinate, max_coordinate)
     y_coordinate: int = random.randint(min_coordinate, max_coordinate)
 
@@ -96,6 +154,16 @@ def generate_coordinate(min_coordinate: int = -100, max_coordinate: int = 100):
 
 
 def calculate_euclidian_distance(first_point: Coordinate, second_point: Coordinate) -> float:
+    """
+    Calculates the Euclidean distance between two points.
+
+    Args:
+        first_point: The first point.
+        second_point: The second point.
+
+    Returns:
+        float: The Euclidean distance between the two points.
+    """
     x_distance: int = abs(first_point.x_coordinate - second_point.x_coordinate)
     y_distance: int = abs(first_point.y_coordinate - second_point.y_coordinate)
     distance: float = sqrt(x_distance ** 2 + y_distance ** 2)
@@ -104,6 +172,14 @@ def calculate_euclidian_distance(first_point: Coordinate, second_point: Coordina
 
 
 def validate_path(path: list[int], source: Node, destination: Node) -> None:
+    """
+    Validates and prints a path from a source node to a destination node.
+
+    Args:
+        path (list[int]): The path as a list of node IDs.
+        source (Node): The source node.
+        destination (Node): The destination node.
+    """
     if len(path):
         print(' -> '.join([str(city) for city in path]))
     else:
@@ -112,13 +188,45 @@ def validate_path(path: list[int], source: Node, destination: Node) -> None:
 
 
 def initialize_graph(graph: list[Node]) -> None:
+    """
+    Initializes the graph by setting the initial state of each node.
+
+    Args:
+        graph: The graph represented as a list of Node objects.
+
+    """
     for node in graph:
         node.status = Status.NOT_VISITED
         node.estimated_cost = inf
         node.father_node = None
 
 
+def relax(cur_node: Node, next_node: Node, weight: int) -> None:
+    """
+    Relaxes an edge between two nodes if a shorter path is found.
+
+    Args:
+        cur_node (Node): The current node.
+        next_node (Node): The next node connected by the edge.
+        weight (int): The weight of the edge.
+
+    """
+    if (next_node.estimated_cost > (cur_node.estimated_cost + weight)):
+        next_node.estimated_cost = cur_node.estimated_cost + weight
+        next_node.father_node = cur_node
+
+
 def pathway_recursive(node: Node, path: list = []) -> list:
+    """
+    Recursively finds the path from the given node to its father node.
+
+    Args:
+        node: The current node.
+        path: The current path. Defaults to an empty list.
+
+    Returns:
+        list: The updated path from the given node to its father node.
+    """
     if node.father_node == node:
         path.append(node.name)
         return path
@@ -130,15 +238,4 @@ def pathway_recursive(node: Node, path: list = []) -> list:
 
 
 if __name__ == '__main__':
-    # generate_weighted_graph(1000, 10)
-    # print(calculate_euclidian_distance(Coordinate(-5, 2), Coordinate(-3, 4)))
-    # node: Node
-    # for node in generate_weighted_graph(10, 3):
-    #     print(
-    #         f'Status: {node.status} Coordinate: ({node.coordinate.x_coordinate},{node.coordinate.y_coordinate})')
-    #     print(len(node.adjacency_list))
-    #     for edge in node.adjacency_list:
-    #         print(f'\tNode {edge.node} Weight: {edge.weight}')
-    # print(generate_coordinate_list(10000))
-
     pass

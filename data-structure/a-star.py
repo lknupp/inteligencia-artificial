@@ -1,4 +1,4 @@
-from utils import generate_weighted_graph, validate_path, initialize_graph, calculate_euclidian_distance, pathway_recursive
+from utils import generate_weighted_graph, validate_path, initialize_graph, calculate_euclidian_distance, pathway_recursive, relax
 from node import Node
 import time
 import random
@@ -17,14 +17,21 @@ def main():
     print(f'First city: {source.name}')
     print(f'Last city: {destination.name}')
     initial_time: float = time.perf_counter()
-    a_star(graph, source, destination)
+    initialize_graph(graph)
+    a_star(source, destination)
     validate_path(pathway_recursive(destination), source, destination)
     end_time: float = time.perf_counter()
     print(f'Time elapsed: {(end_time - initial_time):.2f} seconds')
 
 
-def a_star(graph: list[Node], source: Node, destination: Node):
-    initialize_graph(graph)
+def a_star(source: Node, destination: Node):
+    """
+    Executes the A* algorithm to find the shortest path between the source and destination nodes in a graph.
+
+    Args:
+        source: The source node.
+        destination: The destination node.
+    """
     p_queue: queue.PriorityQueue = queue.PriorityQueue()
     p_queue.put((0, source))
     source.estimated_cost = 0
@@ -43,12 +50,6 @@ def a_star(graph: list[Node], source: Node, destination: Node):
                     calculate_euclidian_distance(
                         node.coordinate, edge.node.coordinate)
                 p_queue.put((weight, edge.node))
-
-
-def relax(cur_node: Node, next_node: Node, weight: int) -> None:
-    if (next_node.estimated_cost > (cur_node.estimated_cost + weight)):
-        next_node.estimated_cost = cur_node.estimated_cost + weight
-        next_node.father_node = cur_node
 
 
 if __name__ == '__main__':

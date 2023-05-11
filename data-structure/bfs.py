@@ -17,14 +17,22 @@ def main():
 
     print(f'First city: {source.name}')
     print(f'Last city: {destination.name}')
+    initialize_graph(graph)
     bfs(graph, source, destination)
     validate_path(pathway_recursive(destination), source, destination)
     end_time: float = time.perf_counter()
     print(f'Time elapsed: {(end_time - initial_time):.2f} seconds')
 
 
-def bfs(graph: list[Node], source: Node, destination: Node) -> None:
-    initialize_graph(graph)
+def bfs(source: Node, destination: Node) -> None:
+    """
+    Performs breadth-first search (BFS) algorithm on a graph.
+
+    Args:
+        source: The source node for the search.
+        destination: The destination node to reach.
+
+    """
     node: Node = source
     node.father_node = node
     q: queue.Queue = queue.Queue()
@@ -39,21 +47,6 @@ def bfs(graph: list[Node], source: Node, destination: Node) -> None:
                 edge.node.status = Status.PROCESSING
                 edge.node.father_node = node
                 q.put(edge.node)
-
-
-def pathway(father: list, aim: int) -> list:
-    path: list = []
-    idx: int = aim
-    if father[idx] != -1:
-        path.append(idx + 1)
-        try:
-            while father[idx] != -2:
-                idx = father[idx]
-                path.append(idx + 1)
-        except IndexError:
-            return []
-        path.reverse()
-    return path
 
 
 if __name__ == '__main__':

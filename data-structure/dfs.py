@@ -8,7 +8,7 @@ from status import Status
 
 def main():
     graph_nodes: int = 1000
-    graph: list[Node] = generate_weighted_graph(graph_nodes, 2)
+    graph: list[Node] = generate_weighted_graph(graph_nodes, 10)
     print(f'Nodes number: {len(graph)}')
     initial_time: float = time.perf_counter()
     source: Node = graph[random.randint(0, len(graph) - 1)]
@@ -24,6 +24,17 @@ def main():
 
 
 def dfs(cur_node: Node, prev_node: Node, destination: Node) -> bool:
+    """
+    Performs depth-first search (DFS) algorithm on the graph recursively.
+
+    Args:
+        cur_node: The current node being visited.
+        prev_node: The previous node visited.
+        destination: The destination node to reach.
+
+    Returns:
+        bool: True if the destination is reached, False otherwise.
+    """
     if cur_node == destination:
         cur_node.father_node = prev_node
         return True

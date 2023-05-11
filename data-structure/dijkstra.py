@@ -1,4 +1,4 @@
-from utils import generate_weighted_graph, validate_path, initialize_graph, pathway_recursive
+from utils import generate_weighted_graph, validate_path, initialize_graph, pathway_recursive, relax
 from node import Node
 import time
 import random
@@ -17,14 +17,22 @@ def main():
     print(f'First city: {source.name}')
     print(f'Last city: {destination.name}')
     initial_time: float = time.perf_counter()
-    dijkstra(graph, source, destination)
+    initialize_graph(graph)
+    dijkstra(source, destination)
     validate_path(pathway_recursive(destination), source, destination)
     end_time: float = time.perf_counter()
     print(f'Time elapsed: {(end_time - initial_time):.2f} seconds')
 
 
-def dijkstra(graph: list[Node], source: Node, destination: Node):
-    initialize_graph(graph)
+def dijkstra(source: Node, destination: Node):
+    """
+    Performs Dijkstra's algorithm to find the shortest path in a weighted graph.
+
+    Args:
+        source: The source node to start the search from.
+        destination: The destination node to reach.
+
+    """
     p_queue: queue.PriorityQueue = queue.PriorityQueue()
     node: Node = source
     p_queue.put((0, node))
@@ -41,12 +49,6 @@ def dijkstra(graph: list[Node], source: Node, destination: Node):
             if edge.node.status != Status.VISITED:
                 edge.node.status = Status.PROCESSING
                 p_queue.put((edge.node.estimated_cost, edge.node))
-
-
-def relax(cur_node: Node, next_node: Node, weight: int) -> None:
-    if (next_node.estimated_cost > (cur_node.estimated_cost + weight)):
-        next_node.estimated_cost = cur_node.estimated_cost + weight
-        next_node.father_node = cur_node
 
 
 if __name__ == '__main__':
