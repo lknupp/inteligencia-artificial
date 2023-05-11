@@ -1,42 +1,43 @@
-import random
-import utils
+from utils import generate_weighted_graph, validate_path, initialize_graph, pathway_recursive
+from node import Node
 import time
+import random
+
+from status import Status
 
 
 def main():
-    graph: list = utils.generate_graph()
+    graph_nodes: int = 1000
+    graph: list[Node] = generate_weighted_graph(graph_nodes, 2)
     print(f'Nodes number: {len(graph)}')
     initial_time: float = time.perf_counter()
-    idx: int = random.randint(0, len(graph) - 1)
-    aim: int = random.randint(0, len(graph) - 1)
-    print(f'First city: {idx + 1}')
+    source: Node = graph[random.randint(0, len(graph) - 1)]
+    destination: Node = graph[random.randint(0, len(graph) - 1)]
 
-    print(f'Last city: {aim + 1}')
-    path: list = dfs(graph, idx, aim, [False]*len(graph))
-
-    if len(path):
-        print(' -> '.join([str(city) for city in path]))
-    else:
-        print(f'There is no path from city {idx + 1} to {aim + 1}')
+    print(f'First city: {source.name}')
+    print(f'Last city: {destination.name}')
+    initialize_graph(graph)
+    dfs(source, source, destination)
+    validate_path(pathway_recursive(destination), source, destination)
     end_time: float = time.perf_counter()
     print(f'Time elapsed: {(end_time - initial_time):.2f} seconds')
 
 
-def dfs(graph: list, idx: int, aim: int, visited: list) -> list:
-    if idx >= len(graph):
-        return []
-    if visited[idx]:
-        return []
+def dfs(cur_node: Node, prev_node: Node, destination: Node) -> bool:
+    if cur_node == destination:
+        cur_node.father_node = prev_node
+        return True
+    if cur_node.status == Status.VISITED:
+        return False
+    cur_node.status = Status.VISITED
 
-    visited[idx] = True
+    for edge in cur_node.adjacency_list:
+        found: bool = dfs(edge.node, cur_node, destination)
+        if found:
+            cur_node.father_node = prev_node
+            return True
 
-    if idx == aim:
-        return [idx + 1]
-    for node in graph[idx]:
-        path: list = dfs(graph, node, aim, visited)
-        if path:
-            return [idx + 1] + path
-    return []
+    return False
 
 
 if __name__ == '__main__':
