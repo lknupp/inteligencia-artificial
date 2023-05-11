@@ -5,8 +5,9 @@ from math import inf
 
 
 class Node:
-    def __init__(self, id: int, status: Status, coordinate: Coordinate) -> None:
+    def __init__(self, id: int, name: str, status: Status, coordinate: Coordinate) -> None:
         self.id: int = id
+        self.name: str = name
         self.status: Status = status
         self.discovery_time: int
         self.finish_time: int
