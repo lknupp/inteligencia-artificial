@@ -3,6 +3,9 @@ from node import Node, Edge
 from coordinate import Coordinate
 from status import Status
 from math import sqrt, floor, inf
+from parse_xml import parse_xml
+
+MAX_CITIES_NUMBER = 5572
 
 
 def generate_graph() -> list:
@@ -30,8 +33,9 @@ def generate_weighted_graph(nodes_number: int, max_nodes_connections: int) -> li
         nodes_number, max_nodes_connections)
     graph_nodes: int = nodes_number
     coordinates: list[Coordinate] = generate_coordinate_list(graph_nodes)
+    cities = random.sample(parse_xml(), nodes_number)
     weighted_graph: list = [
-        Node(id, Status.NOT_VISITED, coordinates[id]) for id in range(graph_nodes)]
+        Node(id, cities[id], Status.NOT_VISITED, coordinates[id]) for id in range(graph_nodes)]
     node: Node
     for i, node in enumerate(weighted_graph):
         for j in create_adjacency_list(i, graph_nodes, random.randint(1, max_nodes_connections)):
@@ -50,10 +54,13 @@ def validate_nodes_number(nodes_number: int, max_nodes_connections: int) -> tupl
         nodes_number = default_nodes_value
         print(
             f'The number of nodes was set to the default value of {nodes_number}')
-    if max_nodes_connections > nodes_number:
-        max_nodes_connections = max(1, nodes_number // 5)
+    if nodes_number > MAX_CITIES_NUMBER:
+        nodes_number = MAX_CITIES_NUMBER
+        print(f'The number of nodes was set to the maximum of {nodes_number}')
+    if max_nodes_connections > 50:
+        max_nodes_connections = random.randint(10, 50)
         print(
-            f'The maximum number of connections was set to the maximum of{max_nodes_connections}')
+            f'The maximum number of connections was set to the maximum of {max_nodes_connections}')
 
     return nodes_number, max_nodes_connections
 
@@ -109,6 +116,17 @@ def initialize_graph(graph: list[Node]) -> None:
         node.status = Status.NOT_VISITED
         node.estimated_cost = inf
         node.father_node = None
+
+
+def pathway_recursive(node: Node, path: list = []) -> list:
+    if node.father_node == node:
+        path.append(node.name)
+        return path
+    elif node.father_node == None:
+        return path
+    pathway_recursive(node.father_node, path)
+    path.append(node.name)
+    return path
 
 
 if __name__ == '__main__':
